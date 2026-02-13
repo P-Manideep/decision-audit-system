@@ -64,12 +64,24 @@ class DecisionService:
         # Store in MongoDB
         await db.decision_traces.insert_one(trace_data)
         
+        # Prepare data for Elasticsearch (remove MongoDB _id and convert datetime)
+        es_data = trace_data.copy()
+        es_data.pop("_id", None)
+        
+        # Convert datetime objects to ISO format strings for Elasticsearch
+        for key in ["timestamp", "created_at", "updated_at"]:
+            if key in es_data and isinstance(es_data[key], datetime):
+                es_data[key] = es_data[key].isoformat()
+        
         # Index in Elasticsearch for search
         await es_client.index(
             index="decision_traces",
             id=decision_id,
-            document=trace_data
+            document=es_data
         )
+        
+        # Remove _id from trace_data before returning
+        trace_data.pop("_id", None)
         
         return DecisionTrace(**trace_data)
     
