@@ -47,7 +47,7 @@ class DecisionService:
             "decision_id": decision_id,
             "source_system": trace_create.source_system,
             "input_payload": trace_create.input_payload,
-            "rules_triggered": [rule.model_dump() for rule in trace_create.rules_triggered],
+            "rules_triggered": [rule.dict() for rule in trace_create.rules_triggered],
             "output": trace_create.output,
             "confidence": trace_create.confidence,
             "risk_level": trace_create.risk_level.value,
@@ -121,7 +121,7 @@ class DecisionService:
         result = await db.decision_traces.find_one_and_update(
             {"decision_id": decision_id},
             {
-                "$push": {"review_notes": review_note.model_dump()},
+                "$push": {"review_notes": review_note.dict()},
                 "$set": {"updated_at": datetime.utcnow()}
             },
             return_document=True
@@ -150,7 +150,7 @@ class DecisionService:
             return False
         
         # Recalculate hash
-        trace_data = trace.model_dump()
+        trace_data = trace.dict()
         stored_hash = trace_data.pop("hash")
         trace_data.pop("review_notes", None)
         trace_data.pop("updated_at", None)
