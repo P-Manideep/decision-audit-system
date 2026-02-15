@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/app/main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
+  "env": {
+    "MONGODB_URL": "mongodb+srv://admin:ceay9evfdBcpBcoi@decision-audit-cluster.ybumdfm.mongodb.net/decision_audit?retryWrites=true&w=majority&appName=decision-audit-cluster",
+    "DATABASE_NAME": "decision_audit",
+    "SECRET_KEY": "production-secret-key-123",
+    "CORS_ORIGINS": "[\"*\"]"
+  }
+}
